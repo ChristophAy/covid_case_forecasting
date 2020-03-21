@@ -4,3 +4,4 @@ scikit-learn==0.22
 jupyterlab
 statsmodels==0.11.1
 seaborn==0.10.0
+flake8
