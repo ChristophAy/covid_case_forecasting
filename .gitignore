@@ -290,3 +290,6 @@ TSWLatexianTemp*
 
 # generated if using elsarticle.cls
 *.spl
+
+# pycharm files
+.idea
