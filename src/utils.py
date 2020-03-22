@@ -17,6 +17,7 @@ def train_model(
     print_every=100,
     which_model="stationary",
 ):
+    """Train the epidemic model with PyTorch on aggregate data."""
 
     th.manual_seed(seed)
     np.random.seed(seed)
@@ -63,6 +64,7 @@ def train_model_region(
     print_every=100,
     which_model="stationary",
 ):
+    """Train the epidemic model with PyTorch on regional data."""
 
     th.manual_seed(seed)
     np.random.seed(seed)
@@ -106,6 +108,7 @@ def train_model_region(
 
 
 def prepare_region_data(df, scale_by=1):
+    """Prepare regional data so that it can be used in train_model_region."""
     regions = df.region_name.unique()
     x_region = {}
     x_t_region = {}
@@ -138,6 +141,7 @@ def prepare_region_data(df, scale_by=1):
 
 
 def predict_vs_actual_by_region(df, model_region, scale_by=1):
+    """Compute predicted vs. actual plots by region."""
 
     x_region, x_t_region, y_region = prepare_region_data(df, scale_by=scale_by)
 
@@ -162,6 +166,7 @@ def predict_vs_actual_by_region(df, model_region, scale_by=1):
 
 
 def plot_pred_vs_act_multistep(df, model_region, region_pred, horizon, scale_by):
+    """Plot predicted vs. actual plots for multistep predictions, for one region."""
     df_pred = df[df.region_name == region_pred]
     x = df_pred["cases_pos_hospitalized_icu"].to_numpy()[:-1] / scale_by
     x_t = df_pred["cases_pos_hospitalized_icu_change"].to_numpy()[:-1] / scale_by
@@ -232,6 +237,7 @@ def plot_pred_vs_act_multistep(df, model_region, region_pred, horizon, scale_by)
 
 
 def plot_pred_vs_act_one_step(df_pred_act, region_pred):
+    """Plot predicted vs. actual plots for one-step-ahead predictions, for one region."""
     df_pred_wide = (
         df_pred_act[["cases_icu_act", "cases_icu_predicted"]]
         .loc[df_pred_act["region_name"] == region_pred]

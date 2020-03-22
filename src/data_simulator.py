@@ -2,6 +2,24 @@ import numpy as np
 
 
 def simulate_data(T=100, exp_omega=0.05, decay_factor=0.05, seed=1, type="constant"):
+    """Simulate data with time varying average growth rate omega.
+
+    Parameters
+    ----------
+    T : int
+        Number of time periods.
+    exp_omega : float
+        Scaling factor of omega.
+    decay_factor : float
+        Speed of growth rae decay for decay model.
+    type : str
+        Type of time variation in omega, one of "constant", "sine", and "decay".
+
+    Returns
+    -------
+    x, y, x_t, lam_t, omega
+        Data and parameters.
+    """
 
     np.random.seed(seed)
 

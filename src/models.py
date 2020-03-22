@@ -3,6 +3,7 @@ import torch as th
 
 
 class EpidemicModel(th.nn.Module):
+    """Score driven epidemic model."""
     def __init__(self):
 
         super(EpidemicModel, self).__init__()
@@ -11,6 +12,20 @@ class EpidemicModel(th.nn.Module):
         self.gamma = th.nn.Parameter(th.tensor(0.0, requires_grad=True))
 
     def forward(self, x, y):
+        """Run forward step.
+
+        Parameters
+        ----------
+        x : torch.float
+            Cumulative number of cases.
+        y : torch.float
+            New cases.
+
+        Returns
+        -------
+        log_lams, omegas
+            Time varying parameters.
+        """
 
         self.omega = self.alpha / (1 - self.beta)
         self.score = 0
@@ -26,6 +41,24 @@ class EpidemicModel(th.nn.Module):
         return th.stack(log_lams), omegas
 
     def predict(self, x, y, horizon):
+        """Predict from model.
+
+        Predictions will be made for `horizon` steps after the input data.
+
+        Parameters
+        ----------
+        x : torch.float
+            Cumulative number of cases.
+        y : torch.float
+            New cases.
+        horizon : int
+            Number of periods to predict.
+
+        Returns
+        -------
+        pred : numpy.array
+            Predictions.
+        """
 
         log_lam, omegas = self.forward(x, y)
         omega = omegas[-1]
@@ -41,6 +74,7 @@ class EpidemicModel(th.nn.Module):
 
 
 class EpidemicModelUnitRoot(th.nn.Module):
+    """Score driven epidemic model with unit root dynamics."""
     def __init__(self):
 
         super(EpidemicModelUnitRoot, self).__init__()
@@ -48,6 +82,20 @@ class EpidemicModelUnitRoot(th.nn.Module):
         self.gamma = th.nn.Parameter(th.tensor(0.0, requires_grad=True))
 
     def forward(self, x, y):
+        """Run forward step.
+
+        Parameters
+        ----------
+        x : torch.float
+            Cumulative number of cases.
+        y : torch.float
+            New cases.
+
+        Returns
+        -------
+        log_lams, omegas
+            Time varying parameters.
+        """
 
         omega = self.omega0
         self.score = 0
@@ -63,6 +111,24 @@ class EpidemicModelUnitRoot(th.nn.Module):
         return th.stack(log_lams), omegas
 
     def predict(self, x, y, horizon):
+        """Predict from model.
+
+        Predictions will be made for `horizon` steps after the input data.
+
+        Parameters
+        ----------
+        x : torch.float
+            Cumulative number of cases.
+        y : torch.float
+            New cases.
+        horizon : int
+            Number of periods to predict.
+
+        Returns
+        -------
+        pred : numpy.array
+            Predictions.
+        """
 
         log_lam, omegas = self.forward(x, y)
         omega = omegas[-1]
@@ -77,10 +143,27 @@ class EpidemicModelUnitRoot(th.nn.Module):
 
 
 class PoissonLogLikelihood(th.nn.Module):
+    """Compute the average Poisson log likelihood."""
     def __init__(self):
         super(PoissonLogLikelihood, self).__init__()
 
     def forward(self, log_lam, target, max_val=1e6):
+        """Run forward step.
+
+        Parameters
+        ----------
+        log_lam : torch.float
+            Log of predicted new cases.
+        target : torch.float
+            Actual new cases.
+        max_val : int
+            Number to replace missing values in objective by.
+
+        Returns
+        -------
+        objective
+            Average objective.
+        """
         objective = th.exp(log_lam) - target * log_lam
         objective = th.where(
             th.isnan(objective), th.full_like(objective, max_val), objective
