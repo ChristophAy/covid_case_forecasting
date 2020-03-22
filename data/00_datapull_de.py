@@ -106,4 +106,3 @@ land_aggregated = pd.merge(
     land_aggregated, demographic_info, left_on="IdBundesland", right_on="Id", how="left"
 )
 land_aggregated.to_csv(os.path.join(path, "DE_combined_bottom_up.csv"), index=False)
-
